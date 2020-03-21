@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.0-experimental
 # Haskell base
-FROM ubuntu:18.04 AS haskell-base-lts-14.27
+FROM ubuntu:18.04 AS haskell-base
 
 ARG USERID=1000
 ARG GROUPID=1000
@@ -77,7 +77,7 @@ RUN set -x && \
   stack config set resolver ${GHC_RESOLVER_VERSION}
 
 # update the package index
-FROM haskell-base-lts-14.27 AS stack-update
+FROM haskell-base AS stack-update
 
 RUN set -x && \
   stack --no-terminal update
