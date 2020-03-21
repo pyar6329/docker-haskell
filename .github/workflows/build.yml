@@ -1,0 +1,36 @@
+name: Publish Docker
+on:
+  push:
+  schedule:
+    - cron: '0 2 * * 0' # Weekly on Sundays at 02:00
+jobs:
+  build:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        ghc: ['8.6.5', '8.6.4']
+    env:
+      DOCKER_BUILDKIT: 1
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        fetch-depth: 1
+    - name: Test Docker Build ${{ matrix.ghc }}
+      if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/')
+      env:
+        GHC_VERSION: ${{ matrix.ghc }}
+      run: |
+        docker build -t "${GITHUB_REPOSITORY}:${GHC_VERSION}" -f ./${GHC_VERSION}/Dockerfile .
+    - name: Check Docker Image Size ${{ matrix.ghc }}
+      if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/')
+      run: |
+        docker images
+        docker history ${GITHUB_REPOSITORY}:${GHC_VERSION}
+    - name: Publish to Docker Registry ${{ matrix.ghc }}
+      if: github.ref == 'refs/heads/master'
+      uses: elgohr/Publish-Docker-Github-Action@master
+      with:
+        name: pyar6329/jupyterlab
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        tags: ${{ matrix.ghc }}
