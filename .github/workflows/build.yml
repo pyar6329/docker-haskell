@@ -15,6 +15,7 @@ jobs:
     - uses: actions/checkout@v1
       with:
         fetch-depth: 1
+
     - name: Publish to Docker Registry ${{ matrix.ghc }}-base
       uses: docker/build-push-action@v1
       if: github.event_name != 'schedule'
@@ -26,6 +27,19 @@ jobs:
         tags: ${{ matrix.ghc }}-base
         target: haskell-base
         dockerfile: ${{ matrix.ghc }}/Dockerfile
+
+    - name: Publish to Docker Registry ${{ matrix.ghc }}-llvm-base
+      uses: docker/build-push-action@v1
+      if: github.event_name != 'schedule'
+      with:
+        repository: pyar6329/haskell
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        push: ${{ github.ref == 'refs/heads/master' }}
+        tags: ${{ matrix.ghc }}-llvm-base
+        target: haskell-llvm-base
+        dockerfile: ${{ matrix.ghc }}/Dockerfile
+
     - name: Publish to Docker Registry ${{ matrix.ghc }}
       uses: docker/build-push-action@v1
       if: github.event_name != 'schedule'
@@ -37,6 +51,19 @@ jobs:
         tags: ${{ matrix.ghc }}
         target: stack-update
         dockerfile: ${{ matrix.ghc }}/Dockerfile
+
+    - name: Publish to Docker Registry ${{ matrix.ghc }}-llvm
+      uses: docker/build-push-action@v1
+      if: github.event_name != 'schedule'
+      with:
+        repository: pyar6329/haskell
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        push: ${{ github.ref == 'refs/heads/master' }}
+        tags: ${{ matrix.ghc }}-llvm
+        target: stack-llvm-update
+        dockerfile: ${{ matrix.ghc }}/Dockerfile
+
     - name: Publish to Docker Registry ${{ matrix.ghc }} (cron)
       uses: docker/build-push-action@v1
       if: github.event_name == 'schedule'
@@ -46,4 +73,17 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
         push: ${{ github.ref == 'refs/heads/master' }}
         tags: ${{ matrix.ghc }}
+        target: stack-update-cron
+        dockerfile: ${{ matrix.ghc }}/Dockerfile_cron
+
+    - name: Publish to Docker Registry ${{ matrix.ghc }}-llvm (cron)
+      uses: docker/build-push-action@v1
+      if: github.event_name == 'schedule'
+      with:
+        repository: pyar6329/haskell
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        push: ${{ github.ref == 'refs/heads/master' }}
+        tags: ${{ matrix.ghc }}
+        target: stack-llvm-update-cron
         dockerfile: ${{ matrix.ghc }}/Dockerfile_cron
