@@ -1,0 +1,5 @@
+# update the package index
+FROM pyar6329/haskell:8.6.4-base
+
+RUN set -x && \
+  stack --no-terminal update
