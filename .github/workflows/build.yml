@@ -15,22 +15,26 @@ jobs:
     - uses: actions/checkout@v1
       with:
         fetch-depth: 1
-    - name: Test Docker Build ${{ matrix.ghc }}
-      if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/')
-      env:
-        GHC_VERSION: ${{ matrix.ghc }}
-      run: |
-        docker build -t "${GITHUB_REPOSITORY}:${GHC_VERSION}" -f ./${GHC_VERSION}/Dockerfile .
-    - name: Check Docker Image Size ${{ matrix.ghc }}
-      if: github.ref != 'refs/heads/master' && !startsWith(github.ref, 'refs/tags/')
-      run: |
-        docker images
-        docker history ${GITHUB_REPOSITORY}:${GHC_VERSION}
-    - name: Publish to Docker Registry ${{ matrix.ghc }}
-      if: github.ref == 'refs/heads/master'
-      uses: elgohr/Publish-Docker-Github-Action@master
+    - name: Publish to Docker Registry ${{ matrix.ghc }}-base
+      uses: docker/build-push-action@v1
+      if: ${{ github.event_name != 'schedule' }}
       with:
-        name: pyar6329/jupyterlab
+        repository: pyar6329/haskell
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
+        push: ${{ github.ref == 'refs/heads/master' }}
+        tags: ${{ matrix.ghc }}-base
+        target: haskell-base
+        dockerfile: ${{ matrix.ghc }}/Dockerfile
+
+    - name: Publish to Docker Registry ${{ matrix.ghc }}
+      uses: docker/build-push-action@v1
+      with:
+        repository: pyar6329/haskell
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+        push: ${{ github.ref == 'refs/heads/master' }}
         tags: ${{ matrix.ghc }}
+        target: stack-update
+        dockerfile: ${{ matrix.ghc }}/Dockerfile
+
