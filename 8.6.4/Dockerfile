@@ -61,6 +61,7 @@ RUN set -x && \
     libtinfo-dev \
     make \
     netbase \
+    openssh-client \
     xz-utils \
     zlib1g-dev && \
   apt-get clean && \
