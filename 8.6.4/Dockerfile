@@ -86,11 +86,11 @@ USER root
 RUN set -x && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
-    clang-6.0 \
-    llvm-6.0 \
-    llvm-6.0-dev \
+    clang-${LLVM_VERSION} \
+    llvm-${LLVM_VERSION} \
+    llvm-${LLVM_VERSION}-dev \
     libomp-dev \
-    llvm-6.0-tools && \
+    llvm-${LLVM_VERSION}-tools && \
   find /usr/bin -name "*${LLVM_VERSION}" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -s {}-${LLVM_VERSION} {}" && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
