@@ -76,9 +76,36 @@ RUN set -x && \
   stack config set install-ghc --global false && \
   stack config set resolver ${GHC_RESOLVER_VERSION}
 
+# add llvm
+FROM haskell-base AS haskell-llvm-base
+
+ARG LLVM_VERSION="6.0"
+USER root
+
+## install ghc
+RUN set -x && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+    clang-6.0 \
+    llvm-6.0 \
+    llvm-6.0-dev \
+    libomp-dev \
+    llvm-6.0-tools && \
+  find /usr/bin -name "*${LLVM_VERSION}" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -s {}-${LLVM_VERSION} {}" && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/* && \
+  echo 'ghc-options:\n  "$everything": -O2 -fllvm\ncolor: never\n' >> /home/haskell/.stack/config.yaml
+
+USER haskell
+
 # update the package index
 FROM haskell-base AS stack-update
 
 RUN set -x && \
   stack --no-terminal update
 
+# update the package index
+FROM haskell-llvm-base AS stack-llvm-update
+
+RUN set -x && \
+  stack --no-terminal update
