@@ -7,14 +7,14 @@ ARG GROUPID=1000
 ARG USERNAME=haskell
 
 # ref: https://github.com/commercialhaskell/lts-haskell/blob/master/lts-14.27.yaml
-ARG GHC_RESOLVER_VERSION=lts-14.27
 ARG GHC_VERSION=8.6.5
 ARG CABAL_VERSION=2.4
 ARG STACK_VERSION=2.1.3
-ARG STACK_ROOT=/home/${USERNAME}/.stack
 
 ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8" \
+    GHC_RESOLVER_VERSION=lts-14.27 \
+    STACK_ROOT=/home/${USERNAME}/.stack \
     PATH=/home/${USERNAME}/.local/bin:/home/${USERNAME}/.cabal/bin:/opt/cabal/${CABAL_VERSION}/bin:/opt/ghc/${GHC_VERSION}/bin:${STACK_ROOT}/programs/x86_64-linux/ghc-${GHC_VERSION}/bin:${PATH} \
     LD_LIBRARY_PATH=/usr/lib:${LD_LIBRARY_PATH} \
     DEBIAN_FRONTEND=noninteractive
