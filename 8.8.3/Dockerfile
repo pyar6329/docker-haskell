@@ -82,7 +82,7 @@ RUN set -x && \
 FROM haskell-base AS haskell-llvm-base
 
 # ref: https://gitlab.haskell.org/ghc/ghc/-/wikis/commentary/compiler/backends/llvm/installing#llvm-support
-ARG LLVM_VERSION="7.0"
+ARG LLVM_VERSION="7"
 USER root
 
 ## install ghc
