@@ -94,7 +94,7 @@ RUN set -x && \
     llvm-${LLVM_VERSION}-dev \
     libomp-dev \
     llvm-${LLVM_VERSION}-tools && \
-  find /usr/bin -name "*${LLVM_VERSION}" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -s {}-${LLVM_VERSION} {}" && \
+  find /usr/bin -name "*-${LLVM_VERSION}" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -s {}-${LLVM_VERSION} {}" && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
   echo 'ghc-options:\n  "$everything": -O2 -fllvm\n' >> /home/haskell/.stack/config.yaml
