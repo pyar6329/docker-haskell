@@ -75,7 +75,8 @@ RUN set -x && \
   echo "packages: []" > ${STACK_ROOT}/global-project/stack.yaml && \
   stack config set system-ghc --global true && \
   stack config set install-ghc --global false && \
-  stack config set resolver ${GHC_RESOLVER_VERSION}
+  stack config set resolver ${GHC_RESOLVER_VERSION} && \
+  echo 'color: never\n' >> ${STACK_ROOT}/config.yaml
 
 # add llvm
 FROM haskell-base AS haskell-llvm-base
@@ -95,7 +96,7 @@ RUN set -x && \
   find /usr/bin -name "*${LLVM_VERSION}" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -s {}-${LLVM_VERSION} {}" && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
-  echo 'ghc-options:\n  "$everything": -O2 -fllvm\ncolor: never\n' >> /home/haskell/.stack/config.yaml
+  echo 'ghc-options:\n  "$everything": -O2 -fllvm\n' >> /home/haskell/.stack/config.yaml
 
 USER haskell
 

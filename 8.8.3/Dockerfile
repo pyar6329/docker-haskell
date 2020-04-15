@@ -6,14 +6,14 @@ ARG USERID=1000
 ARG GROUPID=1000
 ARG USERNAME=haskell
 
-# ref: https://github.com/commercialhaskell/lts-haskell/blob/master/lts-13.19.yaml
-ARG GHC_VERSION=8.6.4
-ARG CABAL_VERSION=2.4
+# ref: https://www.stackage.org/lts-15.8
+ARG GHC_VERSION=8.8.3
+ARG CABAL_VERSION=3.0
 ARG STACK_VERSION=2.1.3
 
 ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8" \
-    GHC_RESOLVER_VERSION=lts-13.19 \
+    GHC_RESOLVER_VERSION=lts-15.8 \
     STACK_ROOT=/home/${USERNAME}/.stack \
     PATH=/home/${USERNAME}/.local/bin:/home/${USERNAME}/.cabal/bin:/opt/cabal/${CABAL_VERSION}/bin:/opt/ghc/${GHC_VERSION}/bin:${STACK_ROOT}/programs/x86_64-linux/ghc-${GHC_VERSION}/bin:${PATH} \
     LD_LIBRARY_PATH=/usr/lib:${LD_LIBRARY_PATH} \
@@ -81,7 +81,8 @@ RUN set -x && \
 # add llvm
 FROM haskell-base AS haskell-llvm-base
 
-ARG LLVM_VERSION="6.0"
+# ref: https://gitlab.haskell.org/ghc/ghc/-/wikis/commentary/compiler/backends/llvm/installing#llvm-support
+ARG LLVM_VERSION="7"
 USER root
 
 ## install ghc
@@ -93,7 +94,7 @@ RUN set -x && \
     llvm-${LLVM_VERSION}-dev \
     libomp-dev \
     llvm-${LLVM_VERSION}-tools && \
-  find /usr/bin -name "*${LLVM_VERSION}" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -s {}-${LLVM_VERSION} {}" && \
+  find /usr/bin -name "*-${LLVM_VERSION}" -not -name "x86_64-linux-gnu-*" | sed -e "s/-${LLVM_VERSION}//g" | xargs -I {} -n 1 bash -c "ln -sf {}-${LLVM_VERSION} {}" && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/* && \
   echo 'ghc-options:\n  "$everything": -O2 -fllvm\n' >> /home/haskell/.stack/config.yaml
