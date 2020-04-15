@@ -1,0 +1,11 @@
+# update the package index
+FROM pyar6329/haskell:8.8.3-base AS stack-update-cron
+
+RUN set -x && \
+  stack --no-terminal update
+
+# update the package index
+FROM pyar6329/haskell:8.8.3-llvm-base AS stack-llvm-update-cron
+
+RUN set -x && \
+  stack --no-terminal update

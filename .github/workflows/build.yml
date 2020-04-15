@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        ghc: ['8.6.5', '8.6.4']
+        ghc: ['8.8.3', '8.6.5', '8.6.4']
     env:
       DOCKER_BUILDKIT: 1
     steps:
