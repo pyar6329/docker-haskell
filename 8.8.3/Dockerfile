@@ -9,7 +9,7 @@ ARG USERNAME=haskell
 # ref: https://www.stackage.org/lts-15.8
 ARG GHC_VERSION=8.8.3
 ARG CABAL_VERSION=3.0
-ARG STACK_VERSION=2.1.3
+ARG STACK_VERSION=2.3.1
 
 ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8" \
