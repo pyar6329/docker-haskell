@@ -75,7 +75,7 @@ RUN set -x && \
   echo "system-ghc: true" > ${STACK_ROOT}/config.yaml && \
   echo "install-ghc: false" >> ${STACK_ROOT}/config.yaml && \
   echo "color: never" >> ${STACK_ROOT}/config.yaml && \
-  chown -R /home/${USERNAME}/.local ${USERNAME}:${USERNAME} ${STACK_ROOT}
+  chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local ${STACK_ROOT}
 
 USER ${USERNAME}
 

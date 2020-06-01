@@ -39,13 +39,14 @@ case "$1" in
     trap : TERM INT
     sleep infinity & wait;;
   "--build" )
-    exec stack build --test --no-run-tests --fast -j$CPU_CORES --ghc-options '+RTS -N -A128m -RTS';;
+    exec stack build --test --no-run-tests --fast --allow-different-user -j$CPU_CORES --ghc-options '+RTS -N -A128m -RTS';;
   "--test" )
-    exec stack test --fast -j$CPU_CORES --ghc-options '+RTS -N -A128m -RTS';;
+    exec stack test --fast -j$CPU_CORES --allow-different-user --ghc-options '+RTS -N -A128m -RTS';;
   "--watch" )
     exec stack test \
       --fast \
       -j$CPU_CORES \
+      --allow-different-user \
       --file-watch \
       --test-arguments '--rerun --failure-report .hspec-failures --rerun-all-on-success' \
       --ghc-options '+RTS -N -A128m -RTS';;

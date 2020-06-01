@@ -32,6 +32,13 @@ RUN set -x && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
+RUN set -x && \
+  curl -o /usr/local/bin/su-exec.c "https://raw.githubusercontent.com/ncopa/su-exec/master/su-exec.c" && \
+  gcc -Wall /usr/local/bin/su-exec.c -o /usr/local/bin/su-exec && \
+  chown root:root /usr/local/bin/su-exec && \
+  chmod 0755 /usr/local/bin/su-exec && \
+  rm /usr/local/bin/su-exec.c
+
 COPY bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 USER ${USERNAME}
