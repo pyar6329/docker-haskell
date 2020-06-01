@@ -18,13 +18,19 @@ if [ -n "${GITHUB_TOKEN}" ]; then
   fi
 fi
 
+if ! [ -e "${STACK_ROOT}" ]; then
+  mkdir -p ${STACK_ROOT}
+fi
+
 if ! [ -e "${STACK_ROOT}/global-project" ]; then
-  cp -rf ${HOME}/.stack_base/global-project ${STACK_ROOT}/global-project
+  mv ${HOME}/.stack_base/global-project ${STACK_ROOT}/global-project
 fi
 
 if ! [ -e "${STACK_ROOT}/config.yaml" ]; then
-  cp -rf ${HOME}/.stack_base/config.yaml ${STACK_ROOT}/config.yaml
+  mv ${HOME}/.stack_base/config.yaml ${STACK_ROOT}/config.yaml
 fi
+
+rm -rf ${HOME}/.stack_base
 
 CPU_CORES=$(grep -c processor /proc/cpuinfo)
 
@@ -46,7 +52,7 @@ case "$1" in
   "--clean" )
     exec stack clean;;
   "--format" )
-    exec find . -name '*.hs' -exec bash -lc 'stylish-haskell -i {} && brittany --indent=4 --write-mode=inplace {}';;
+    find ./{app,src,test} -name '*.hs' -not -path '*/.stack-work/*' -not -path '*/.var/*' | xargs -I{} -n 1 -P $CPU_CORES bash -c "stylish-haskell -i {} && brittany --indent=4 --write-mode=inplace {}";;
   "--install" )
     exec stack install --test --no-run-tests --fast -j$CPU_CORES --ghc-options '+RTS -N -A128m -RTS';;
   * )

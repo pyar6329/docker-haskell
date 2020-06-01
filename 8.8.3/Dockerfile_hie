@@ -10,13 +10,13 @@ ARG USERNAME=haskell
 USER root
 
 RUN set -x && \
+  mv /home/${USERNAME}/.stack /home/${USERNAME}/.stack_base && \
   apt-get update && \
   apt-get install -y --no-install-recommends \
     libicu-dev \
     libtinfo-dev \
     libgmp-dev \
     zstd && \
-  cp -rf /home/${USERNAME}/.stack /home/${USERNAME}/.stack_base && \
   curl -sL "https://github.com/jaspervdj/stylish-haskell/releases/download/v${STYLISH_HASKELL_VERSION}/stylish-haskell-v${STYLISH_HASKELL_VERSION}-linux-x86_64.tar.gz" | tar -zx -C /usr/local/bin --wildcards **/stylish-haskell --strip-components=1 && \
   curl -sL "https://github.com/pyar6329/docker-hie/releases/download/${HIE_VERSION}/ghc-${GHC_VERSION}-ubuntu-18.04-brittany-${BRITTANY_VERSION}.tar.zst" | tar -I pzstd -x -C /usr/local/bin && \
   curl -sL "https://github.com/pyar6329/docker-hie/releases/download/${HIE_VERSION}/ghc-${GHC_VERSION}-ubuntu-18.04-hspec-discover-${HSPEC_DISCOVER_VERSION}.tar.zst" | tar -I pzstd -x -C /usr/local/bin && \
