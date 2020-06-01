@@ -1,0 +1,39 @@
+FROM pyar6329/haskell:base-8.8.3
+
+ARG GHC_VERSION="8.8.3"
+ARG HIE_VERSION="1.4"
+ARG STYLISH_HASKELL_VERSION="0.11.0.0"
+ARG BRITTANY_VERSION="0.12.1.1"
+ARG HSPEC_DISCOVER_VERSION="2.7.1"
+ARG USERNAME=haskell
+
+USER root
+
+RUN set -x && \
+  apt-get update && \
+  apt-get install -y --no-install-recommends \
+    libicu-dev \
+    libtinfo-dev \
+    libgmp-dev \
+    zstd && \
+  cp -rf /home/${USERNAME}/.stack /home/${USERNAME}/.stack_base && \
+  curl -sL "https://github.com/jaspervdj/stylish-haskell/releases/download/v${STYLISH_HASKELL_VERSION}/stylish-haskell-v${STYLISH_HASKELL_VERSION}-linux-x86_64.tar.gz" | tar -zx -C /usr/local/bin --wildcards **/stylish-haskell --strip-components=1 && \
+  curl -sL "https://github.com/pyar6329/docker-hie/releases/download/${HIE_VERSION}/ghc-${GHC_VERSION}-ubuntu-18.04-brittany-${BRITTANY_VERSION}.tar.zst" | tar -I pzstd -x -C /usr/local/bin && \
+  curl -sL "https://github.com/pyar6329/docker-hie/releases/download/${HIE_VERSION}/ghc-${GHC_VERSION}-ubuntu-18.04-hspec-discover-${HSPEC_DISCOVER_VERSION}.tar.zst" | tar -I pzstd -x -C /usr/local/bin && \
+  curl -sL "https://github.com/pyar6329/docker-hie/releases/download/${HIE_VERSION}/ghc-${GHC_VERSION}-ubuntu-18.04-hoogle.tar.zst" | tar -I pzstd -x -C /home/${USERNAME} && \
+  curl -sL "https://github.com/pyar6329/docker-hie/releases/download/${HIE_VERSION}/ghc-${GHC_VERSION}-ubuntu-18.04-hie.tar.zst" | tar -I pzstd -x -C /usr/local/bin --wildcards **/hie --strip-components=1 && \
+  chown -R root:root \
+    /usr/local/bin/stylish-haskell \
+    /usr/local/bin/brittany \
+    /usr/local/bin/hspec-discover \
+    /usr/local/bin/hie && \
+  chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.hoogle && \
+  apt-get purge --autoremove -y zstd && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+
+COPY bin/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+USER ${USERNAME}
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["--wait"]
