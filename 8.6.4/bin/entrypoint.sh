@@ -49,8 +49,8 @@ case "$1" in
       --fast \
       --allow-different-user \
       --file-watch \
-      --test-arguments "--rerun --failure-report .hspec-failures --rerun-all-on-success" \
-      --ghc-options "-j$CPU_CORES +RTS -N -A128m -RTS";;
+      --test-arguments '--rerun --failure-report .hspec-failures --rerun-all-on-success' \
+      --ghc-options "-j$CPU_CORES+RTS -N -A128m -RTS";;
   "--clean" )
     exec stack clean;;
   "--format" )
