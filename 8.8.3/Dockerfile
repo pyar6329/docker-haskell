@@ -67,16 +67,17 @@ RUN set -x && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
-USER ${USERNAME}
-
 ## config stack
 RUN set -x && \
   mkdir -p /home/${USERNAME}/.local/bin ${STACK_ROOT}/global-project && \
   echo "packages: []" > ${STACK_ROOT}/global-project/stack.yaml && \
-  stack config set system-ghc --global true && \
-  stack config set install-ghc --global false && \
-  stack config set resolver ${GHC_RESOLVER_VERSION} && \
-  echo 'color: never\n' >> ${STACK_ROOT}/config.yaml
+  echo "resolver: ${GHC_RESOLVER_VERSION}" >> ${STACK_ROOT}/global-project/stack.yaml && \
+  echo "system-ghc: true" > ${STACK_ROOT}/config.yaml && \
+  echo "install-ghc: false" >> ${STACK_ROOT}/config.yaml && \
+  echo "color: never" >> ${STACK_ROOT}/config.yaml && \
+  chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.local ${STACK_ROOT}
+
+USER ${USERNAME}
 
 # add llvm
 FROM haskell-base AS haskell-llvm-base
