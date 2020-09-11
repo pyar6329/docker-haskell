@@ -40,6 +40,8 @@ case "$1" in
     sleep infinity & wait;;
   "--build" )
     exec stack build --test --no-run-tests --fast --allow-different-user -j$CPU_CORES --ghc-options '+RTS -N -A128m -RTS';;
+  "--build-watch" )
+    exec stack build --test --no-run-tests --file-watch --fast --allow-different-user -j$CPU_CORES --ghc-options '+RTS -N -A128m -RTS';;
   "--test" )
     exec stack test --fast -j$CPU_CORES --allow-different-user --ghc-options '+RTS -N -A128m -RTS';;
   "--watch" )
