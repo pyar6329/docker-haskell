@@ -35,7 +35,11 @@ rm -rf ${HOME}/.stack_base
 CPU_CORES=$(grep -c processor /proc/cpuinfo)
 
 if ! cat ${STACK_ROOT}/config.yaml | grep "ghc-options" > /dev/null; then
-  echo -e "ghc-options:\n  \"\$everything\": -haddock -j${CPU_CORES}\n" >> ${STACK_ROOT}/config.yaml
+  echo -e "ghc-options:\n  \"\$everything\": -haddock -j${CPU_CORES} -optl-Fuse-ld=lld\n" >> ${STACK_ROOT}/config.yaml
+fi
+
+if ! cat ${STACK_ROOT}/config.yaml | grep "configure-options" > /dev/null; then
+  echo -e "configure-options:\n  \"\$everything\":\n    - \"--ld-options='-fuse-ld=lld'\"\n    - \"--with-ld=ld.lld\"\n" >> ${STACK_ROOT}/config.yaml
 fi
 
 case "$1" in
