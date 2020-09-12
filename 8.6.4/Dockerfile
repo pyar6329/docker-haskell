@@ -9,7 +9,8 @@ ARG USERNAME=haskell
 # ref: https://github.com/commercialhaskell/lts-haskell/blob/master/lts-13.19.yaml
 ARG GHC_VERSION=8.6.4
 ARG CABAL_VERSION=2.4
-ARG STACK_VERSION=2.1.3
+ARG STACK_VERSION=2.3.3
+ARG LLD_VERSION=10
 
 ENV LANG="C.UTF-8" \
     LC_ALL="C.UTF-8" \
@@ -30,18 +31,18 @@ RUN set -x && \
   apt-get install -y --no-install-recommends \
     curl \
     ca-certificates && \
-  curl -sLO "https://github.com/commercialhaskell/stack/releases/download/v${STACK_VERSION}/stack-${STACK_VERSION}-linux-x86_64-static.tar.gz" && \
-  if ! curl -sL "https://github.com/commercialhaskell/stack/releases/download/v${STACK_VERSION}/stack-${STACK_VERSION}-linux-x86_64-static.tar.gz.sha256" | sha256sum -c -; then \
+  curl -sLO "https://github.com/commercialhaskell/stack/releases/download/v${STACK_VERSION}/stack-${STACK_VERSION}-linux-x86_64.tar.gz" && \
+  if ! curl -sL "https://github.com/commercialhaskell/stack/releases/download/v${STACK_VERSION}/stack-${STACK_VERSION}-linux-x86_64.tar.gz.sha256" | sha256sum -c -; then \
     echo "stack-${STACK_VERSION} checksum was failed" >&2 && \
     exit 1 ;\
   fi ; \
-  tar -xvzf stack-${STACK_VERSION}-linux-x86_64-static.tar.gz && \
-  cp -L stack-${STACK_VERSION}-linux-x86_64-static/stack /usr/local/bin/stack && \
+  tar -xvzf stack-${STACK_VERSION}-linux-x86_64.tar.gz && \
+  cp -L stack-${STACK_VERSION}-linux-x86_64/stack /usr/local/bin/stack && \
   apt-get purge --autoremove -y \
     ca-certificates \
     curl && \
   apt-get clean && \
-  rm -rf /var/lib/apt/lists/* stack-${STACK_VERSION}-linux-x86_64-static stack-${STACK_VERSION}-linux-x86_64-static.tar.gz
+  rm -rf /var/lib/apt/lists/* stack-${STACK_VERSION}-linux-x86_64 stack-${STACK_VERSION}-linux-x86_64.tar.gz
 
 ## install ghc
 RUN set -x && \
@@ -55,6 +56,7 @@ RUN set -x && \
     curl \
     ca-certificates \
     g++ \
+    lld-${LLD_VERSION} \
     ghc-${GHC_VERSION} \
     git \
     libpq-dev \
@@ -64,6 +66,13 @@ RUN set -x && \
     openssh-client \
     xz-utils \
     zlib1g-dev && \
+  ln -s "/usr/bin/lld-${LLD_VERSION}" "/usr/bin/lld" && \
+  ln -s "/usr/bin/lld" "/usr/bin/ld.lld" && \
+  ln -s "/usr/bin/lld-link-${LLD_VERSION}" "/usr/bin/lld-link" && \
+  update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.lld" 30 && \
+  update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.gold" 20 && \
+  update-alternatives --install "/usr/bin/ld" "ld" "/usr/bin/ld.bfd" 10 && \
+  update-alternatives --set ld "/usr/bin/ld.lld" && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
