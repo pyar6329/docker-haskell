@@ -34,6 +34,10 @@ rm -rf ${HOME}/.stack_base
 
 CPU_CORES=$(grep -c processor /proc/cpuinfo)
 
+if ! cat ${STACK_ROOT}/config.yaml | grep "ghc-options" > /dev/null; then
+  echo -e "ghc-options:\n  \"\$everything\": -haddock -j${CPU_CORES}\n" >> ${STACK_ROOT}/config.yaml
+fi
+
 case "$1" in
   "--wait" )
     trap : TERM INT
