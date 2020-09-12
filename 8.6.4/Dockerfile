@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.0-experimental
 # Haskell base
-FROM ubuntu:18.04 AS haskell-base
+FROM ubuntu:20.04 AS haskell-base
 
 ARG USERID=1000
 ARG GROUPID=1000
